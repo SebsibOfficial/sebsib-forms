@@ -1,0 +1,70 @@
+* {
+  transition: all 150ms ease;
+}
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--lightGrey);
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/* The Helvetica Fonts */
+
+@font-face {
+  font-family: "HelveticaNeue";
+  src: local("HelveticaNeue"),
+   url("./assets/fonts/HelveticaNeue.woff") format("opentype");
+  font-weight:400
+}
+
+@font-face {
+  font-family: "HelveticaNeue";
+  src: local("HelveticaNeue"),
+   url("./assets/fonts/HelveticaNeue-Bold.woff") format("opentype");
+  font-weight: 900;
+}
+
+@font-face {
+  font-family: "HelveticaNeue";
+  src: local("HelveticaNeue"),
+   url("./assets/fonts/HelveticaNeue-CondensedBold.woff") format("opentype");
+  font-weight:600;
+}
+
+@font-face {
+  font-family: "HelveticaNeue";
+  src: local("HelveticaNeue"),
+   url("./assets/fonts/HelveticaNeue-Light.woff") format("opentype");
+  font-weight:300
+}
+
+@font-face {
+  font-family: "HelveticaNeue";
+  src: local("HelveticaNeue"),
+   url("./assets/fonts/HelveticaNeue-Medium.woff") format("opentype");
+  font-weight:500
+}
+
+/* The Teko Fonts */
+
+@font-face {
+  font-family: "Teko";
+  src: local("Teko"),
+   url("./assets/fonts/Teko-Medium.woff") format("opentype");
+  font-weight:400
+}
+
+@font-face {
+  font-family: "Teko";
+  src: local("Teko"),
+   url("./assets/fonts/Teko-Bold.woff") format("opentype");
+  font-weight: 900;
+}

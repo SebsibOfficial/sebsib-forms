@@ -1,0 +1,21 @@
+.hv {
+    font-family: 'HelveticaNeue';
+    margin: 0;
+    display: inline-block;
+    width: fit-content;
+}
+.clamp{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box !important;
+    -webkit-box-orient: vertical;
+}
+.c-1{
+    -webkit-line-clamp: 1;
+}
+.c-2{
+    -webkit-line-clamp: 2;
+}
+.c-3{
+    -webkit-line-clamp: 3;
+}

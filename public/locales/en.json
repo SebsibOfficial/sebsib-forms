@@ -1,0 +1,61 @@
+{
+  "sebsib": "Sebsib",
+  "nav_items": {
+    "about_us": "Home",
+    "pricing": "Pricing",
+    "renew": "Renew Subscription",
+    "contact_us": "Contact Us",
+    "login": "Login",
+    "register": "Register"
+  },
+  "first_page_header": "Quality Data For Everyone",
+  "first_page_subtext": "We Provide reliable and top notch services to our clients. We provide Data collection, Data aggregation, Data analysis, Data export, Access without internet and an easily scalable platform.",
+  "second_page": {
+    "headline": "What is Sebsib?",
+    "subtext": "As you embark on your data gathering adventure, Sebsib is a data collection suite that can be of great assistance. First of its kind in Ethiopia, it can help you to utilize the tools on your computer and mobile phone to achieve your goals."
+  },
+  "third_page": {
+    "headline": "Very Simple",
+    "subtext": "Sign Up ---> Create your Survey ---> Download the App ---> Collect your Data. Simplify your data collection with a brief training session and a straightforward approach."
+  },
+  "fourth_page": {
+    "headline": "Made Locally",
+    "subtext": "Tailored to perfection for Ethiopians, Sebsib comes with multiple dialects integrated into it, in addition to its ability to work without internet access."
+  },
+  "fifth_page": {
+    "headline": "Unbelievable Pricing",
+    "subtext": "No more need for foriegn currency as Sebsib provides high quality service with unbelievable pricing plans using Ethiopian Birr."
+  },
+  "sixth_page": {
+    "headline": "Highly Secure",
+    "subtext": "Through Sebsib, all information, data, and survey submissions are completely secure."
+  },
+  "seventh_page": {
+    "headline": "Available",
+    "subtext": "We are always available to provide training on how to use Sebsib and answer all of your inquiries."
+  },
+  "pricing": {
+    "packages": "Packages",
+    "monthly": "Monthly",
+    "yearly": "Yearly"
+  },
+  "register": {
+    "name": "Name",
+    "father's_name": "Father's Name",
+    "email": "Email Address",
+    "phone": "Phone Number",
+    "org": "Company or Service User",
+    "package_type": "Package Type",
+    "choose_package": "Choose Package",
+    "thankyou_msg": "Thank you for registering. We will reachout by email shortly.",
+    "regis": "Register",
+    "title": "REGISTER",
+    "transaction_ref": "Transaction Ref. Number",
+    "choose_bank": "Choose Bank"
+  },
+  "renew": {
+    "renew": "Renew",
+    "renewal": "RENEWAL"
+  },
+  "css_sub_text": "light_weight"
+}

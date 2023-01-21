@@ -1,0 +1,23 @@
+.sb-list-item {
+    justify-content: space-between;
+    align-items: center;
+}
+.list-select {
+    padding: 0.5em;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.list-display {
+    padding: 0.5em;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.list-remove {
+    margin-bottom: 0.7em;
+}
+.list-select:hover {
+    background-color: #5050751c;
+}
+.list-display:hover {
+    background-color: #5050751c;
+}

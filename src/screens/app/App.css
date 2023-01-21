@@ -1,0 +1,35 @@
+.parent-screen {
+  width: -webkit-fill-available;
+  background-color: var(--lightGrey);
+}
+.btn:focus {
+  box-shadow: none !important;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid lightgray;
+  margin: auto;
+  border-top-color: var(--primary);
+  animation: Rotate 800ms linear 0s infinite forwards;
+}
+
+@keyframes Rotate {
+  0% {
+      transform: rotate(0deg);
+  }
+  100% {
+      transform: rotate(360deg);
+  }
+}
+
+.mini-spinner {
+  width: 15px;
+  height: 15px;
+  border: 2px solid rgba(211, 211, 211, 0.347);
+  margin: auto;
+  border-top-color: white;
+  animation: Rotate 500ms linear 0s infinite forwards;
+}
+    
