@@ -16,8 +16,8 @@
     margin-bottom: 0.7em;
 }
 .list-select:hover {
-    background-color: #5050751c;
+    background-color: rgba(183, 183, 221, 0.08);
 }
 .list-display:hover {
-    background-color: #5050751c;
+    background-color: rgba(183, 183, 221, 0.08);
 }

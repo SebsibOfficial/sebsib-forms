@@ -1,6 +1,7 @@
 .parent-screen {
   width: -webkit-fill-available;
   background-color: var(--lightGrey);
+  background-image: url('../../assets/pattern.png');
 }
 .btn:focus {
   box-shadow: none !important;
