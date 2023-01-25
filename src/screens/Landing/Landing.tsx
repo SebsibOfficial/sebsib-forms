@@ -14,22 +14,25 @@ export default function Landing() {
       qs: "First Question",
       it: "TEXT",
       sh: true,
+      rq: false,
       onResponse(){}
     },
     {
       id: "2",
       qs: "Second Question",
       it: "CHOICE",
-      cs: [{_id: "2c1", ct: "CHICE ONE"},{_id: "2c2", ct: "CHICE TWO"}],
+      cs: [{_id: "2c1", ct: "CHICE ONE", dfv: "UNSELECTED"},{_id: "2c2", ct: "CHICE TWO", dfv: "UNSELECTED"},{_id: "2c3", ct: "CHICE THree", dfv: "UNSELECTED"}],
       sh: true,
+      rq: true,
       onResponse(){}
     },
     {
       id: "3",
       qs: "Third Question",
       it: "MULTI-SELECT",
-      cs: [{_id: "3c1", ct: "CHICE ONE"},{_id: "3c2", ct: "CHICE TWO"}],
+      cs: [{_id: "3c1", ct: "CHICE ONE", dfv: "UNSELECTED"},{_id: "3c2", ct: "CHICE TWO", dfv: "UNSELECTED"},{_id: "3c3", ct: "CHICE THree", dfv: "UNSELECTED"}],
       sh: true,
+      rq: true,
       onResponse(){}
     },
     {
@@ -37,6 +40,7 @@ export default function Landing() {
       qs: "Six Question",
       it: "NUMBER",
       sh: true,
+      rq: true,
       onResponse(){}
     },
     {
@@ -44,6 +48,7 @@ export default function Landing() {
       qs: "Sevens Question",
       it: "DATE",
       sh: true,
+      rq: true,
       onResponse(){}
     },
     {
@@ -51,12 +56,13 @@ export default function Landing() {
       qs: "8th Question",
       it: "FILE",
       sh: true,
+      rq: true,
       onResponse(){}
     },
   ])
 
-  const handleResponse = (ans: string | string[], id: string, input?: "CHOICE" | "MULTI-SELECT") => {
-    // Handle the choice conundrum here
+
+  const handleResponse = (ans: string | string[] | object, id: string) => {
     console.log(ans, id)
   }
 
@@ -83,15 +89,15 @@ export default function Landing() {
               </p>
               <Button variant='primary' className='mt-3'>Start</Button>
             </div>
-            <div style={{'display':'none'}} className='ques-container'>
+            <div className='ques-container'>
               {
                 QS.map((ques, index) => (
-                  <Sb_Questions qs={ques.qs} it={ques.it} cs={ques.cs} sh={ques.sh} id={index+''} onResponse={(ans, id, inp) => handleResponse(ans, id, inp)}/>
+                  <Sb_Questions key={index} qs={ques.qs} it={ques.it} cs={ques.cs} sh={ques.sh} id={index+''} rq={ques.rq} onResponse={(ans, id) => handleResponse(ans, id)}/>
                 )) 
               }
               <Button variant='primary' size='sm' style={{'float':'right'}}>Submit Response</Button>
             </div>
-            <div>
+            <div style={{'display':'none'}}>
               <Row>
                 <Col style={{'display':'flex', 'alignItems':'center', 'marginBottom':'2em'}}>
                   <FontAwesomeIcon icon={faCheckCircle} style={{'marginRight':'10px', 'color':'var(--yellow)', 'fontSize':'20px'}}/>
@@ -100,6 +106,7 @@ export default function Landing() {
               </Row>
               <Button variant='primary' size='sm' style={{'float':'left'}}>Submit Another Response</Button>
             </div>
+            {/* <Sb_Loader full/> */}
           </div>
         </Col>
       </Row>

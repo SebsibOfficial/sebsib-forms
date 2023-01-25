@@ -8,6 +8,13 @@
 .form-select-sm {
   font-size: 12px !important;
 }
+.form-check-input:checked {
+  background-color: var(--primary) !important;
+  border-color: var(--primary) !important;
+}
+.form-check-input:focus {
+  box-shadow: 0 0 0 0.25rem rgba(81, 81, 118, 0.25) !important;
+}
 .question-text-area {
   width: 100%;
   border: 0;

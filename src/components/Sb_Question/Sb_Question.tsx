@@ -11,18 +11,20 @@ export interface QuestionI {
   qs: string,
   it: "TEXT" | "CHOICE" | "MULTI-SELECT" | "NUMBER" | "FILE" | "DATE",
   sh: boolean,
+  rq: boolean,
   cs?: {
     _id: string,
     ct: string,
     dfv?: "UNSELECTED" | "SELECTED" | undefined
   }[],
-  onResponse: (answer: string | string[], id: string, inp?: "CHOICE" | "MULTI-SELECT") => void
+  onResponse: (answer: string | string[] | object, id: string, inp?: "CHOICE" | "MULTI-SELECT", act?: "UNSELECTED" | "SELECTED" | undefined) => void
 }
 
 export default function Sb_Questions (props:QuestionI) {
 
   const inputRef = useRef<HTMLInputElement>(null);
   const [fileNameDisp, setFileNameDisp] = useState("");
+  const [selected, setSelected] = useState<string[]>([]);
 
   const handleFileChange = (e:any) => {
     const fileObj = e.target.files && e.target.files[0];
@@ -30,40 +32,23 @@ export default function Sb_Questions (props:QuestionI) {
       return;
     }
     setFileNameDisp(fileObj.name)
-    //console.log('fileObj is', fileObj);
-
-    // 👇️ reset file input
-    e.target.value = null;
-
-    // 👇️ is now empty
-    //console.log(e.target.files);
-
-    // 👇️ can still access file object here
-    //console.log(fileObj);
-    //console.log(fileObj.name);
+    props.onResponse(fileObj, props.id)
   };
 
-  const handleChoices = (id:string, text:string, grp:string, lst: "CHOICE" | "MULTI-SELECT", act: "UNSELECTED" | "SELECTED" | undefined) => {
-    switch (lst) {
-      case "CHOICE":
-        if (act == "SELECTED") {
+  const handleRadio = (e:any) => {
+    props.onResponse(e.target.value, props.id)
+  }
 
-        }
-        else {
-
-        }
-        break;
-      case "MULTI-SELECT":
-        if (act == "SELECTED") {
-
-        }
-        else {
-          
-        }
-        break;
-      default:
-        break;
+  const handleChecks = (e:any) => {
+    var selectState = selected
+    if (e.target.checked) {
+      selectState.push(e.target.value);
+      setSelected(selectState);
+    } 
+    else {
+      setSelected(selectState.filter((s) => s != e.target.value))
     }
+    props.onResponse(selected, props.id)
   }
 
   const handleTextNumDates = (text: string, input: "TEXT" | "NUMBER" | "DATE") => {
@@ -74,15 +59,48 @@ export default function Sb_Questions (props:QuestionI) {
     <div className="question-container" style={{'display': props.sh ? 'block' : 'none'}}>
       <Row>
         <Col className="question-text-holder">
-          {props.qs}{<span style={{'color':'red','fontSize':'1.5em'}}>*</span>}
+          {props.qs}{<span style={{'color':'red','fontSize':'1.5em', 'display': props.rq ? '' : 'none'}}>*</span>}
         </Col>
       </Row>
       <Row>
         <Col>
           {
-            (props.it == 'CHOICE' || props.it == 'MULTI-SELECT') && 
-              <Sb_List GroupId={"GRP"+props.id} listType={props.it} items={props.cs} 
-              onAction={(id, text, grp, lst, act) => handleChoices(id, text, grp, lst, act)}/>
+            (props.it == 'CHOICE') && 
+            <>
+              <Form onChange={(e) => handleRadio(e)}>
+              {
+                props.cs?.map((ch, index) => (
+                  <Form.Check 
+                    type={"radio"} 
+                    key = {index} 
+                    name={props.id} 
+                    label={ch.ct} 
+                    value={ch._id}
+                    id={ch._id}/>
+                ))
+          
+              }
+              </Form>
+            </>
+          }
+          {
+            (props.it == 'MULTI-SELECT') && 
+            <>
+              <Form onChange={(e) => handleChecks(e)}>
+              {
+                props.cs?.map((ch, index) => (
+                  <Form.Check 
+                    type={"checkbox"} 
+                    key = {index} 
+                    name={props.id} 
+                    label={ch.ct} 
+                    value={ch._id}
+                    id={ch._id}/>
+                ))
+          
+              }
+              </Form>
+            </>
           }
           {
             props.it == 'TEXT' && 
