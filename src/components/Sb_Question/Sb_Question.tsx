@@ -10,7 +10,13 @@ export interface QuestionI {
   id: string,
   qs: string,
   it: "TEXT" | "CHOICE" | "MULTI-SELECT" | "NUMBER" | "FILE" | "DATE",
+  disp: boolean,
   sh: boolean,
+  shptrn?: {
+    questionId: string,
+    answerId: string,
+    responseId: string
+  }
   rq: boolean,
   cs?: {
     _id: string,
@@ -56,7 +62,7 @@ export default function Sb_Questions (props:QuestionI) {
   }
 
   return (
-    <div className="question-container" style={{'display': props.sh ? 'block' : 'none'}}>
+    <div className="question-container" style={{'display': props.disp ? 'block' : 'none'}}>
       <Row>
         <Col className="question-text-holder">
           {props.qs}{<span style={{'color':'red','fontSize':'1.5em', 'display': props.rq ? '' : 'none'}}>*</span>}
