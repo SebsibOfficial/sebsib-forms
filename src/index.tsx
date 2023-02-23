@@ -9,8 +9,8 @@ import axios from "axios";
 
 axios.defaults.baseURL =
   process.env.NODE_ENV == "development"
-    ? process.env.REACT_APP_DEV_API_URL
-    : process.env.REACT_APP_PROD_API_URL;
+    ? process.env.REACT_APP_DEV_NEXT_API_URL
+    : process.env.REACT_APP_NEXT_API_URL;
 //axios.defaults.baseURL = process.env.REACT_APP_PROD_API_URL;
 //axios.defaults.baseURL = "http://192.168.0.128:3000";
 

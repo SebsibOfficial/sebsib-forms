@@ -6,6 +6,10 @@ import Sb_Questions, { QuestionI } from '../../components/Sb_Question/Sb_Questio
 import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faFileUpload } from '@fortawesome/free-solid-svg-icons';
+import { GetSurvey, SendResponse } from '../../utils/api';
+import { useParams } from 'react-router-dom';
+import { generateId, translateIds } from '../../utils/helpers';
+import Sb_Text from '../../components/Sb_Text/Sb_Text';
 
 interface AnswerI {
   _id: string,
@@ -14,133 +18,26 @@ interface AnswerI {
   answer?: string | string[] | object
 }
 
+interface ResponsePayloadI {
+  _id: string
+  surveyId: string
+  answers: AnswerI[]
+  sentDate: string
+}
+
 export default function Landing() {
-  const [QS, setQS] = useState<QuestionI[]>([
-    {
-      id: "1",
-      qs: "First Question",
-      it: "TEXT",
-      disp: true,
-      sh: false,
-      rq: false,
-      onResponse(){}
-    },
-    {
-      id: "2",
-      qs: "Second Question",
-      it: "CHOICE",
-      cs: [{_id: "2c1", ct: "CHICE ONE", dfv: "UNSELECTED"},{_id: "2c2", ct: "CHICE TWO", dfv: "UNSELECTED"},{_id: "2c3", ct: "CHICE THree", dfv: "UNSELECTED"}],
-      sh: false,
-      rq: true,
-      disp: true,
-      onResponse(){}
-    },
-    {
-      id: "3",
-      qs: "Third Question",
-      it: "MULTI-SELECT",
-      cs: [{_id: "3c1", ct: "CHICE ONE", dfv: "UNSELECTED"},{_id: "3c2", ct: "CHICE TWO", dfv: "UNSELECTED"},{_id: "3c3", ct: "CHICE THree", dfv: "UNSELECTED"}],
-      sh: true,
-      disp: false,
-      shptrn: {
-        answerId: "2c1",
-        questionId: "2",
-        responseId: "1"
-      },
-      rq: true,
-      onResponse(){}
-    },
-    {
-      id: "4",
-      qs: "Six Question",
-      it: "NUMBER",
-      sh: false,
-      rq: true,
-      disp: true,
-      onResponse(){}
-    },
-    {
-      id: "5",
-      qs: "Sevens Question",
-      it: "DATE",
-      sh: false,
-      rq: true,
-      disp: true,
-      onResponse(){}
-    },
-    {
-      id: "6",
-      qs: "8th Question",
-      it: "FILE",
-      sh: true,
-      shptrn: {
-        answerId: "3c1",
-        questionId: "3",
-        responseId: "1"
-      },
-      rq: true,
-      disp: false,
-      onResponse(){}
-    },
-  ])
-  const [ANS, setANS] = useState<AnswerI[]>([
-    {
-      _id: "12",
-      inputType: "TEXT",
-      questionId: "1",
-    },
-    {
-      _id: "13",
-      inputType: "CHOICE",
-      questionId: "2",
-    },
-    {
-      _id: "14",
-      inputType: "MULTI-SELECT",
-      questionId: "3",
-    },
-    {
-      _id: "15",
-      inputType: "NUMBER",
-      questionId: "4",
-    },
-    {
-      _id: "16",
-      inputType: "DATE",
-      questionId: "5",
-    },
-    {
-      _id: "17",
-      inputType: "FILE",
-      questionId: "6",
-    }
-  ])
-  const [DISP_STATE, SET_DISP_STATE] = useState<{id: string, disp: boolean}[]>([
-    {
-      id: "1",
-      disp: true,
-    },
-    {
-      id: "2",
-      disp: true,
-    },
-    {
-      id: "3",
-      disp: false,
-    },
-    {
-      id: "4",
-      disp: true,
-    },
-    {
-      id: "5",
-      disp: true,
-    },
-    {
-      id: "6",
-      disp: false,
-    },
-  ])
+  let { link } = useParams();
+  const [surveyId, setSurveyId] = useState("");
+  const [surveyName, setSurveyName] = useState("");
+  const [surveyDesc, setSurveyDesc] = useState("");
+  const [phase, setPhase] = useState<"INITIAL" | "FILLING" | "COMPLETE">("INITIAL")
+  const [QS, setQS] = useState<QuestionI[]>([])
+  const [ANS, setANS] = useState<AnswerI[]>([])
+  const [DISP_STATE, SET_DISP_STATE] = useState<{id: string, disp: boolean}[]>([])
+  const [pageLoading, setPageLoading] = useState(true);
+  const [btnLoading, setBtnLoading] = useState(false);
+  const [pageOk, setPageOk] = useState(true);
+  const [mandatoryFilled, setMandatoryFilled] = useState(false);
 
   const handleResponse = (answer: string | string[] | object, id: string) => {
     var ANS_STATE_COPY = [...ANS]
@@ -191,54 +88,186 @@ export default function Landing() {
     return DISP_STATE.filter(d => d.id == id)[0].disp
   }
 
+  const isEmpty = (ans: any) => {
+    if (typeof ans == 'string'){
+      return ans.trim() === "" ? true : false
+    }
+    else
+      false
+  }
+
+  const translateInputTypeAndClean = (ans: AnswerI[]) => {
+    var ans_array: AnswerI[] = [];
+    for (let index = 0; index < ans.length; index++) {
+      var eachAnswer:any = ans[index];
+      eachAnswer.inputType = translateIds("TEXT", eachAnswer.inputType);
+      if (eachAnswer.answer === undefined || eachAnswer.answer === null)
+        eachAnswer.answer = ''
+      ans_array.push(eachAnswer);
+    }
+    return ans_array;
+  }
+
+  const mandatoryCheck = (Questions: QuestionI[], Answers: AnswerI[]) => {
+   for (let index = 0; index < Questions.length; index++) {
+    const element = Questions[index];
+    var AnswerObj = Answers.filter((A: AnswerI) => A.questionId == element.id)[0];
+    if (element.rq && (AnswerObj.answer === undefined || AnswerObj.answer === null || isEmpty(AnswerObj.answer)))
+      return false;
+   }
+    return true
+  }
+
   const submitResponse = () => {
-    console.log(ANS)
+    setBtnLoading(true)
+    var ResponsePayload: ResponsePayloadI = {
+      _id: generateId() as string,
+      surveyId: surveyId,
+      answers: translateInputTypeAndClean(ANS),
+      sentDate: new Date().toISOString()
+    }
+    SendResponse(ResponsePayload).then((result) => {
+      if (result.code == 200) {
+        setBtnLoading(false)
+        setPhase("COMPLETE")
+      } else {
+        console.log(result.data)
+        setBtnLoading(false)
+      }
+    }).catch((err) => console.log(err))
   }
   
+  const mapAnswers = (questions: any[]) => {
+    var ANS_COPY = ANS;
+    questions.forEach((qs: any) => {
+      ANS_COPY.push({
+        _id: generateId() as string,
+        inputType: translateIds("ID", qs.inputType) as "TEXT" | "CHOICE" | "MULTI-SELECT" | "NUMBER" | "FILE" | "DATE",
+        questionId: qs._id
+      })
+    })
+    setANS(ANS_COPY);
+  }
+
+  const mapDisplay = (questions: any[]) => {
+    var DISP_COPY = DISP_STATE;
+    questions.forEach((qs: any) => {
+      DISP_COPY.push({
+        id: qs._id,
+        disp: !qs.hasShowPattern
+      })
+    })
+    SET_DISP_STATE(DISP_COPY);
+  }
+
+  const mapQuestions = (questions: any[]) => {
+    var QS_COPY = QS;
+    questions.forEach((qs: any) => {
+      QS_COPY.push({
+        id: qs._id,
+        qs: qs.questionText,
+        it: translateIds("ID", qs.inputType) as "TEXT" | "CHOICE" | "MULTI-SELECT" | "NUMBER" | "FILE" | "DATE",
+        disp: true,
+        sh: qs.hasShowPattern,
+        rq: qs.mandatory,
+        cs: qs.options,
+        shptrn: qs.showIf,
+        onResponse(answer, id, inp, act) {},
+      })
+    })
+    setQS(QS_COPY);
+  }
+
+  useEffect(() => {
+    GetSurvey(link ?? '').then((result) => {
+      if (result.code == 200) {
+        if (result.data.status == "STARTED"){
+          setSurveyId(result.data._id);
+          setSurveyName(result.data.name);
+          setSurveyDesc(result.data.description);
+          mapDisplay(result.data.questions);
+          mapAnswers(result.data.questions);
+          mapQuestions(result.data.questions);
+          setPageLoading(false)
+          console.log(result.data.questions)
+        }
+        else {
+          setPageOk(false)
+          setPageLoading(false)
+        }
+      }
+      else {
+        setPageOk(false)
+        setPageLoading(false)
+        console.log(result.data)
+      }
+    }).catch((err) => console.error(err)) 
+  }, [])
+
+  // Check if mandatory fields are filled, listen to the Question and Answers
+  useEffect(() => {
+    setMandatoryFilled(mandatoryCheck(QS, ANS))
+  })
+
+
 	return (
 		<section className='landing-screen'>
-      <Row className='logo-row'>
-        <Col className='img-col'>
-          <img src={FormsLogo} alt="" />
-        </Col>
-      </Row>
-      <Row>
-        <Col className='middle-form'>
-          <div className='forms-thumbnail'>
+      {
+        !pageOk ? 
+        <>
+          <div className='four-oh-four-cont'>
+            <div className='four-oh-four-div'>
+              <p className='four-oh-four-p'>404</p>
+              <Sb_Text>The Survey was not found</Sb_Text>
+            </div>
+          </div>
+        </> :
+        <>
+        <Row className='logo-row'>
+          <Col className='img-col'>
+            <img src={FormsLogo} alt="" />
+          </Col>
+        </Row>
+        <Row>
+          <Col className='middle-form'>
+            <div className='forms-thumbnail'>
 
-          </div>
-          <div className='main-content'>
-            <p className='mc-heading'>Global Entrepreneurship Study: Addis Ababa Start Up Index</p>
-            <div style={{'display':'none'}}>
-              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut 
-                labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut 
-                aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu 
-                fugiat nulla pariatur. Excepteur sint occaecat 
-                cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum
-              </p>
-              <Button variant='primary' className='mt-3'>Start</Button>
             </div>
-            <div className='ques-container'>
+            <div className='main-content'>
               {
-                QS.map((ques, index) => (
-                  <Sb_Questions key={index} qs={ques.qs} it={ques.it} cs={ques.cs} sh={ques.sh} disp={lookUpDisp(ques.id)} id={ques.id} rq={ques.rq} onResponse={(ans, id) => handleResponse(ans, id)}/>
-                )) 
+                pageLoading ? <Sb_Loader full/> :
+                <>
+                  <p className='mc-heading'>{surveyName}</p>
+                  <div style={{'display':phase == "INITIAL" ? '' : 'none'}}>
+                    <p>{surveyDesc}
+                    </p>
+                    <Button variant='primary' className='mt-3' onClick={() => setPhase("FILLING")}>Start</Button>
+                  </div>
+                  <div className='ques-container' style={{'display':phase == "FILLING" ? '' : 'none'}}>
+                    {
+                      QS.map((ques, index) => (
+                        <Sb_Questions key={index} qs={ques.qs} it={ques.it} cs={ques.cs} sh={ques.sh} disp={lookUpDisp(ques.id)} id={ques.id} rq={ques.rq} onResponse={(ans, id) => handleResponse(ans, id)}/>
+                      )) 
+                    }
+                    <Button variant='primary' size='sm' style={{'float':'right'}} disabled={!mandatoryFilled} onClick={ mandatoryFilled ? () => submitResponse() : () => null}>{btnLoading ? <Sb_Loader/> : "Submit Response"}</Button>
+                  </div>
+                  <div style={{'display':phase == "COMPLETE" ? '' : 'none'}}>
+                    <Row>
+                      <Col style={{'display':'flex', 'alignItems':'center', 'marginBottom':'2em'}}>
+                        <FontAwesomeIcon icon={faCheckCircle} style={{'marginRight':'10px', 'color':'var(--yellow)', 'fontSize':'20px'}}/>
+                        <p style={{'margin':0}}>Response Submitted Successfully</p>
+                      </Col>
+                    </Row>
+                    <Button variant='primary' size='sm' style={{'float':'left'}} onClick={() => location.reload()}>Submit Another Response</Button>
+                  </div>
+                  {/* <Sb_Loader full/> */} 
+                </>
               }
-              <Button variant='primary' size='sm' style={{'float':'right'}} onClick={() => submitResponse()}>Submit Response</Button>
             </div>
-            <div style={{'display':'none'}}>
-              <Row>
-                <Col style={{'display':'flex', 'alignItems':'center', 'marginBottom':'2em'}}>
-                  <FontAwesomeIcon icon={faCheckCircle} style={{'marginRight':'10px', 'color':'var(--yellow)', 'fontSize':'20px'}}/>
-                  <p style={{'margin':0}}>Response Submitted Successfully</p>
-                </Col>
-              </Row>
-              <Button variant='primary' size='sm' style={{'float':'left'}}>Submit Another Response</Button>
-            </div>
-            {/* <Sb_Loader full/> */}
-          </div>
-        </Col>
-      </Row>
+          </Col>
+        </Row>
+        </>
+      }
 		</section>
 	)
 }

@@ -20,7 +20,7 @@ export interface QuestionI {
   rq: boolean,
   cs?: {
     _id: string,
-    ct: string,
+    text: string,
     dfv?: "UNSELECTED" | "SELECTED" | undefined
   }[],
   onResponse: (answer: string | string[] | object, id: string, inp?: "CHOICE" | "MULTI-SELECT", act?: "UNSELECTED" | "SELECTED" | undefined) => void
@@ -80,7 +80,7 @@ export default function Sb_Questions (props:QuestionI) {
                     type={"radio"} 
                     key = {index} 
                     name={props.id} 
-                    label={ch.ct} 
+                    label={ch.text} 
                     value={ch._id}
                     id={ch._id}/>
                 ))
@@ -99,7 +99,7 @@ export default function Sb_Questions (props:QuestionI) {
                     type={"checkbox"} 
                     key = {index} 
                     name={props.id} 
-                    label={ch.ct} 
+                    label={ch.text} 
                     value={ch._id}
                     id={ch._id}/>
                 ))

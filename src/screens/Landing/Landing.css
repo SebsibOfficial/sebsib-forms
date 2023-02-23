@@ -45,7 +45,27 @@
 .ques-container {
   margin-top: 1em;
 }
-
+.four-oh-four-cont {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.four-oh-four-div {
+  border-radius: 10px;
+  background-color: white;
+  padding: 3em 5em;
+  box-shadow: 0px 0px 6px 2px rgb(128 128 128 / 20%);
+  text-align: center;
+}
+.four-oh-four-p {
+  text-align: center;
+  font-family: 'Teko';
+  font-size: 8em;
+  font-weight: 900;
+  color: var(--primary);
+}
 
 @media screen and (max-width: 800px) {
   .middle-form {

@@ -32,7 +32,7 @@ function App() {
       <Routes>
         <Route path="/" element={<div> <Outlet /> </div>}>
           <Route index element={<Landing />} />
-          <Route path=":id" element={<Landing />} />
+          <Route path=":link" element={<Landing />} />
         </Route>
       </Routes>
     </div>
