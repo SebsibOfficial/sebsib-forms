@@ -37,3 +37,12 @@ export async function SendResponse (body: SendResponseI): Promise<ResponseInterf
     return {code: error.response.status, data: error.response.data}
   }
 }
+
+export async function GetMetaInfo(surveyId: string): Promise<ResponseInterface>{
+  try {
+    var result = await axios.get('forms/getmetainfo/'+surveyId);
+    return {code: result.status, data: result.data};
+  } catch (error:any) {
+    return {code: error.response.status, data: error.response.data}
+  }
+}
