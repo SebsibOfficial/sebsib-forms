@@ -27,11 +27,12 @@ export interface QuestionI {
 }
 
 export default function Sb_Questions (props:QuestionI) {
-
+  // STATES
   const inputRef = useRef<HTMLInputElement>(null);
   const [fileNameDisp, setFileNameDisp] = useState("");
   const [selected, setSelected] = useState<string[]>([]);
-
+  
+  // Handler for file change
   const handleFileChange = (e:any) => {
     const fileObj = e.target.files && e.target.files[0];
     if (!fileObj) {
@@ -40,23 +41,25 @@ export default function Sb_Questions (props:QuestionI) {
     setFileNameDisp(fileObj.name)
     props.onResponse(fileObj, props.id)
   };
-
+  // Handler for Radio type inputs (Single choice types)
   const handleRadio = (e:any) => {
     props.onResponse(e.target.value, props.id)
   }
-
+  // Handler for Mulitple select type inputs
   const handleChecks = (e:any) => {
     var selectState = selected
+    // If a checkbox is selected, add the value of the Checkbox to the `selected` array
     if (e.target.checked) {
       selectState.push(e.target.value);
       setSelected(selectState);
-    } 
+    }
+    // If a checkbox is unselected, remove the value from the `selected` array 
     else {
       setSelected(selectState.filter((s) => s != e.target.value))
     }
     props.onResponse(selected, props.id)
   }
-
+  // Handler for Number, text, and Date type inputs
   const handleTextNumDates = (text: string, input: "TEXT" | "NUMBER" | "DATE") => {
     props.onResponse(text, props.id)
   }
@@ -70,7 +73,7 @@ export default function Sb_Questions (props:QuestionI) {
       </Row>
       <Row>
         <Col>
-          {
+          { // If the question type is `CHOICE`
             (props.it == 'CHOICE') && 
             <>
               <Form onChange={(e) => handleRadio(e)}>
@@ -89,7 +92,7 @@ export default function Sb_Questions (props:QuestionI) {
               </Form>
             </>
           }
-          {
+          { // If the question type is `MULTI-SELECT`
             (props.it == 'MULTI-SELECT') && 
             <>
               <Form onChange={(e) => handleChecks(e)}>
@@ -108,7 +111,7 @@ export default function Sb_Questions (props:QuestionI) {
               </Form>
             </>
           }
-          {
+          { // If the question type is `TEXT`
             props.it == 'TEXT' && 
             <>
               <Form.Group>
@@ -117,14 +120,14 @@ export default function Sb_Questions (props:QuestionI) {
               </Form.Group>
             </>
           }
-          {
+          { // If the question type is `NUMBER`
             props.it == 'NUMBER' && 
             <Form.Group controlId="ChoiceOption">
               <Form.Control size="sm" type="number" placeholder="Number" 
               onChange={(e) => handleTextNumDates(e.target.value, 'NUMBER')}/>
             </Form.Group>
           }
-          {
+          { // If the question type is `DATE`
             props.it == 'DATE' && 
             <>
               <Form.Group>
@@ -133,7 +136,7 @@ export default function Sb_Questions (props:QuestionI) {
               </Form.Group>
             </>
           }
-          {
+          { // If the question type is `FILE`
             props.it == 'FILE' && 
             <div>
               <input
