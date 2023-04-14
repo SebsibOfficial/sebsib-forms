@@ -8,9 +8,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faFileUpload } from '@fortawesome/free-solid-svg-icons';
 import { GetMetaInfo, GetSurvey, SendResponse } from '../../utils/api';
 import { useParams } from 'react-router-dom';
-import { encrypt, generateId, translateIds } from '../../utils/helpers';
+import { encrypt, encryptPath, generateId, translateIds } from '../../utils/helpers';
 import Sb_Text from '../../components/Sb_Text/Sb_Text';
 import axios from 'axios';
+import { blob } from 'stream/consumers';
+import { config } from 'process';
 // Interface for Answers
 interface AnswerI {
   _id: string,
@@ -37,6 +39,7 @@ export default function Landing() {
   const [surveyId, setSurveyId] = useState("");
   const [surveyName, setSurveyName] = useState("");
   const [surveyDesc, setSurveyDesc] = useState("");
+  const [surveyPic, setSurveyPic] = useState("");
   const [shortSurveyId, setShortSurveyid] = useState("");
   const [metaInfo, setMetaInfo] = useState<MetaInfoI>();
   const [phase, setPhase] = useState<"INITIAL" | "FILLING" | "COMPLETE">("INITIAL") /* The page has 3 states, INITIAL (Show survey desc), 
@@ -268,7 +271,7 @@ export default function Landing() {
             headers: {
               secKey: encrypt(tm+'')
             },
-            url: 'http://localhost:3003/file/upload',
+            url: process.env.NODE_ENV == "development" ? process.env.REACT_APP_DEV_FILE_SERVER_URL+"/file/upload" :  process.env.REACT_APP_FILE_SERVER_URL+"/file/upload",
             params: {
               ext: ext,
               response: metaInfo?.responseId ?? '',
@@ -378,6 +381,23 @@ export default function Landing() {
     })
     setQS(QS_COPY);
   }
+
+  const GetSurveyPic = async (path: string) => {
+    try {
+      var resp = await axios.get(
+      process.env.NODE_ENV == "development" ? 
+        process.env.REACT_APP_DEV_FILE_SERVER_URL+"/file/surveypic/"+encryptPath(path) : 
+        process.env.REACT_APP_FILE_SERVER_URL+"/file/surveypic/"+encryptPath(path),
+      {responseType: 'blob'})
+      if (resp.status == 200){
+        const imageObjectURL = URL.createObjectURL(resp.data);
+        setSurveyPic(imageObjectURL);
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   // Run on page load
   useEffect(() => {
     // Get survey data
@@ -391,7 +411,7 @@ export default function Landing() {
           mapDisplay(result.data.questions);
           mapAnswers(result.data.questions);
           mapQuestions(result.data.questions);
-          setPageLoading(false)
+          result.data.pic != "" ? GetSurveyPic(result.data.pic).then(r => {if (result.code == 200) setPageLoading(false)}) : setPageLoading(false)
           console.log(result.data.questions)
         }
         else {
@@ -441,8 +461,7 @@ export default function Landing() {
         {console.log("File",fileCheckStat, "Mand", mandatoryFilled)}
         <Row>
           <Col className='middle-form'>
-            <div className='forms-thumbnail'>
-
+            <div className='forms-thumbnail' style={{'background':'url('+surveyPic+')'}}>
             </div>
             <div className='main-content'>
               {

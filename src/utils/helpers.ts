@@ -84,3 +84,8 @@ export function encrypt (str: string) {
 
   return cipher.toString();
 }
+
+export function encryptPath (path: string) {
+  var encrypted = CryptoJS.Rabbit.encrypt(path, process.env.REACT_APP_PRIVATE_KEY);
+  return encrypted.toString().replaceAll('/', '*');
+}
