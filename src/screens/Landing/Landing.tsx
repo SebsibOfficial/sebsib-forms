@@ -461,7 +461,7 @@ export default function Landing() {
         {console.log("File",fileCheckStat, "Mand", mandatoryFilled)}
         <Row>
           <Col className='middle-form'>
-            <div className='forms-thumbnail' style={{'background':'url('+surveyPic+')'}}>
+            <div className='forms-thumbnail' style={{'background': surveyPic != "" ? 'url('+surveyPic+')' : "var(--primary)"}}>
             </div>
             <div className='main-content'>
               {
