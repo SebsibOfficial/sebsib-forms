@@ -257,7 +257,7 @@ export default function Landing() {
   const checkAndUploadFileType = async () => {
     var ANS_CPY = ANS;
     for (let index = 0; index < ANS_CPY.length; index++) {
-      if (ANS_CPY[index].inputType === "FILE"){
+      if (ANS_CPY[index].inputType === "FILE" && ANS_CPY[index].answer){
         var toBeUploaded = ANS_CPY[index].answer;
         var nameOfFile = (toBeUploaded as any).name as string
         var ext = nameOfFile.split(".")[nameOfFile.split(".").length - 1] // Get extention
