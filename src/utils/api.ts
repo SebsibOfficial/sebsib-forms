@@ -26,7 +26,8 @@ interface SendResponseI {
   _id: string,
   surveyId: string,
   answers: any,
-  sentDate: string
+  sentDate: string,
+  responseTime: number
 }
 
 export async function SendResponse (body: SendResponseI): Promise<ResponseInterface>{

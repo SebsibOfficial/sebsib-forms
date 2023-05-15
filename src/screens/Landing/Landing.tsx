@@ -26,6 +26,7 @@ interface ResponsePayloadI {
   surveyId: string
   answers: AnswerI[]
   sentDate: string
+  responseTime: number
 }
 // Interface for the Meta (addtional) information we get from the API
 interface MetaInfoI {
@@ -52,7 +53,7 @@ export default function Landing() {
   const [pageOk, setPageOk] = useState(true);
   const [mandatoryFilled, setMandatoryFilled] = useState(false);
   const [fileCheckStat, setFileCheckStat] = useState(true);
-  
+  const [initTime, setInit] = useState<number>(0);
   /* 
     `handleResponse` 
     ----------------
@@ -316,7 +317,8 @@ export default function Landing() {
       _id: metaInfo?.responseId ?? '', // set reponse ID 
       surveyId: surveyId,
       answers: translateInputTypeAndClean(ANS), // Transalate the input types to mongo ID
-      sentDate: new Date().toISOString() // Get timestamp
+      sentDate: new Date().toISOString(), // Get timestamp
+      responseTime: Math.round((new Date().getTime() - initTime)/1000)
     }
     SendResponse(ResponsePayload).then((result) => {
       if (result.code == 200) {
@@ -471,7 +473,7 @@ export default function Landing() {
                   <div style={{'display':phase == "INITIAL" ? '' : 'none'}}>
                     <p>{surveyDesc}
                     </p>
-                    <Button variant='primary' className='mt-3' onClick={() => setPhase("FILLING")}>Start</Button>
+                    <Button variant='primary' className='mt-3' onClick={() => {setPhase("FILLING"); setInit(new Date().getTime())}}>Start</Button>
                   </div>
                   {/* --------------------------------------------------------------------------------------------------------- */}
                   <div className='ques-container' style={{'display':phase == "FILLING" ? '' : 'none'}}>
